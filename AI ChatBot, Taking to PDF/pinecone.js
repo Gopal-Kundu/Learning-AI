@@ -6,4 +6,4 @@ const pc = new Pinecone({
   apiKey: process.env.PINECONE_API_KEY,
 });
 
-const index = pc.index("database-for-ai");
+export const index = pc.index("database-for-ai");

@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
 import { GoogleGenAI } from "@google/genai";
+import { pipeline } from '@xenova/transformers';
 
 dotenv.config();
 
@@ -17,17 +18,21 @@ export async function callGemini(prompt) {
   return output;
 }
 
+
+const extractor = await pipeline(
+  "feature-extraction",
+  "Xenova/all-MiniLM-L6-v2"
+);
+
 export async function getEmbeddings(text) {
-    const ai = new GoogleGenAI({});
+  const output = await extractor(text, {
+    pooling: "mean",
+    normalize: true,
+  });
 
-    const response = await ai.models.embedContent({
-        model: 'gemini-embedding-2',
-        contents: text,
-        config: { outputDimensionality: 768 },
-    });
-
-    return response.embeddings[0].values;
+  return Array.from(output.data);
 }
+
 
 export function makeChunks(text, chunkSize = 500) {
   const chunks = [];
